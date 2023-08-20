@@ -51,6 +51,33 @@ export const getAllProducts = async (req: Request, res: Response) => {
   }
 };
 
+// GET PRODUCT DETAIL
+
+export const getProductsDetail = async (req: Request, res: Response) => {
+  try {
+    const productId = req.params.id;
+    const products = await Product.findById(productId);
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No products found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Products retrieved successfully.",
+      products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
+
 // UPDATE PRODUCT
 
 export const updateProduct = async (req: Request, res: Response) => {
