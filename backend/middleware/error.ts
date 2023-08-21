@@ -13,10 +13,14 @@ const errorHandler = (
     });
   }
 
-  console.error(err);
-  return res.status(500).json({
+  if (err instanceof Error && err.name === "CastError") {
+    const message = `Resource not found. Invalid: ${(err as any).path}`;
+    err = new ErrorHandler(message, 400);
+  }
+
+  return res.status((err as any).statusCode).json({
     success: false,
-    message: "Internal server error",
+    message: err.message,
   });
 };
 

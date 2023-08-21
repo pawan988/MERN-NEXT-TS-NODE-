@@ -6,12 +6,9 @@ const dataBaseConnected = (): void => {
     useUnifiedTopology: true,
   };
 
-  mongoose
-    .connect(process.env.DB_URI as string, options)
-    .then((data) => {
-      console.log(`mongodb connected with server: ${data.connection.host}`);
-    })
-    .catch((err) => console.error(err));
+  mongoose.connect(process.env.DB_URI as string, options).then((data) => {
+    console.log(`mongodb connected with server: ${data.connection.host}`);
+  });
 };
 
 export default dataBaseConnected;
