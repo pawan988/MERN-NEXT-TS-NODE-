@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../utils/errorHandler";
 import asyncMiddleware from "../middleware/catchAsyncError";
+import ApiFeatures from "../utils/apiFeatures";
 const Product = require("../models/productModels");
 
 // CREATE PRODUCT (Only Admin Can Perfrom This Action)
@@ -18,6 +19,7 @@ export const createProduct = asyncMiddleware(
 // GET PRODUCT LISTS
 export const getAllProducts = asyncMiddleware(
   async (req: Request, res: Response, next: NextFunction) => {
+    const apiFeatures = new ApiFeatures(Product.find(), req.query);
     const products = await Product.find();
 
     if (!products || products.length === 0) {
