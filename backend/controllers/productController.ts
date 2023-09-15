@@ -7,8 +7,16 @@ const Product = require("../models/productModels");
 // CREATE PRODUCT (Only Admin Can Perfrom This Action)
 export const createProduct = asyncMiddleware(
   async (req: Request, res: Response, next: NextFunction) => {
-    const product = await Product.create(req.body);
-    res.status(201).json({
+    const { description, images, category, stock, rating } = req.body;
+    const productData = new Product({
+      description,
+      images,
+      category,
+      stock,
+      rating,
+    });
+    const product = await productData.save();
+    return res.status(201).json({
       success: true,
       message: "Product has been successfully added.",
       product,
@@ -19,8 +27,8 @@ export const createProduct = asyncMiddleware(
 // GET PRODUCT LISTS
 export const getAllProducts = asyncMiddleware(
   async (req: Request, res: Response, next: NextFunction) => {
-    const apiFeatures = new ApiFeatures(Product.find(), req.query);
-    const products = await Product.find();
+    const apiFeatures = new ApiFeatures(Product.find(), req.query).serach();
+    const products = await apiFeatures?.query;
 
     if (!products || products.length === 0) {
       return next(new ErrorHandler("Product not found", 404));

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const productSchema = {
-  name: {
-    type: String,
-    required: [true, "Please enter product name."],
-    trim: true,
-  },
+  // name: {
+  //   type: String,
+  //   required: [true, "Please enter product name."],
+  //   trim: true,
+  // },
   description: {
     type: String,
     required: [true, "Please enter product description."],
@@ -19,18 +19,9 @@ const productSchema = {
     type: Number,
     default: 0,
   },
-  images: [
-    {
-      public_id: {
-        type: String,
-        required: true,
-      },
-      url: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  images: {
+    type: Object,
+  },
   category: {
     type: String,
     required: [true, "Please enter product category."],
@@ -41,26 +32,26 @@ const productSchema = {
     maxLength: [3, "Stock should be a maximum of 3 characters long."],
     default: 1,
   },
-  numberOfReviews: {
-    type: Number,
-    default: 0,
-    reviews: [
-      {
-        name: {
-          type: String,
-          required: true,
-        },
-        rating: {
-          type: Number,
-          required: true,
-        },
-        comment: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
-  },
+  // numberOfReviews: {
+  //   type: Number,
+  //   default: 0,
+  //   reviews: [
+  //     {
+  //       name: {
+  //         type: String,
+  //         required: true,
+  //       },
+  //       rating: {
+  //         type: Number,
+  //         required: true,
+  //       },
+  //       comment: {
+  //         type: String,
+  //         required: true,
+  //       },
+  //     },
+  //   ],
+  // },
   createdAt: {
     type: Date,
     default: Date.now,
