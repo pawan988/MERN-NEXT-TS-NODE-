@@ -1,3 +1,5 @@
+import { validateProductFields } from "../middleware/addProductMiddleware";
+
 const expresss = require("express");
 const router = expresss.Router();
 const {
@@ -9,7 +11,7 @@ const {
 } = require("../controllers/productController");
 
 router.route("/productsList").get(getAllProducts);
-router.route("/addProduct").post(createProduct);
+router.route("/addProduct").post(validateProductFields, createProduct);
 router.route("/updateProduct/:id").put(updateProduct);
 router.route("/deleteProduct/:id").delete(deleteProduct);
 router.route("/getProductDetail/:id").get(getProductsDetail);

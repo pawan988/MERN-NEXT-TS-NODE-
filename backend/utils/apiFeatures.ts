@@ -1,23 +1,19 @@
 class ApiFeatures {
   query: any;
   queryStr: any;
-
   constructor(query: any, queryStr: any) {
     this.query = query;
     this.queryStr = queryStr;
   }
 
-  serach() {
-    const keyWord = this.queryStr?.keyWord
-      ? {
-          name: {
-            $regex: this.queryStr?.keyWord,
-            $option: "i",
-          },
-        }
-      : {};
+  search() {
+    const keyword = this.queryStr.keyword;
 
-    this.query = this.query.find({ ...keyWord });
+    if (keyword) {
+      const keywordRegex = new RegExp(keyword, "i");
+      this.query = this.query.find({ name: { $regex: keywordRegex } });
+    }
+
     return this;
   }
 }

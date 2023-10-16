@@ -1,78 +1,129 @@
 import { Request, Response, NextFunction } from "express";
-import ErrorHandler from "../utils/errorHandler";
-import asyncMiddleware from "../middleware/catchAsyncError";
 import ApiFeatures from "../utils/apiFeatures";
 const Product = require("../models/productModels");
 
 // CREATE PRODUCT (Only Admin Can Perfrom This Action)
-export const createProduct = asyncMiddleware(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { description, images, category, stock, rating } = req.body;
+export const createProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { description, images, category, stock, rating, name, price } =
+      req.body;
+    const existingProduct = await Product.findOne({ name });
+
+    if (existingProduct) {
+      return res.status(409).json({
+        success: false,
+        message: "Product with the same name already exists.",
+      });
+    }
     const productData = new Product({
+      name,
       description,
       images,
       category,
       stock,
       rating,
+      price,
     });
+
     const product = await productData.save();
+
     return res.status(201).json({
       success: true,
       message: "Product has been successfully added.",
       product,
     });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
-);
+};
 
 // GET PRODUCT LISTS
-export const getAllProducts = asyncMiddleware(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const apiFeatures = new ApiFeatures(Product.find(), req.query).serach();
+
+export const getAllProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const apiFeatures = new ApiFeatures(Product.find(), req.query).search();
     const products = await apiFeatures?.query;
 
     if (!products || products.length === 0) {
-      return next(new ErrorHandler("Product not found", 404));
+      res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: "Products retrieved successfully.",
+        products,
+      });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Products retrieved successfully.",
-      products,
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
     });
   }
-);
+};
 
 // GET PRODUCT DETAIL
 
-export const getProductsDetail = asyncMiddleware(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const productId = req.params.id;
-    const products = await Product.findById(productId);
-
-    if (!products || products.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No products found.",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Products retrieved successfully.",
-      products,
-    });
-  }
-);
-
-// UPDATE PRODUCT
-
-export const updateProduct = asyncMiddleware(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const getProductsDetail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
 
     if (!product) {
-      return next(new ErrorHandler("Product not found", 404));
+      res.status(404).json({
+        success: false,
+        message: "No product found.",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: "Product retrieved successfully.",
+        product,
+      });
+    }
+  } catch (err) {
+    // Handle unexpected errors with a 500 status code
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// UPDATE PRODUCT
+
+export const updateProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+      return;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -86,7 +137,11 @@ export const updateProduct = asyncMiddleware(
     );
 
     if (!updatedProduct) {
-      return next(new ErrorHandler("Product not found", 404));
+      res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+      return;
     }
 
     return res.status(200).json({
@@ -94,18 +149,32 @@ export const updateProduct = asyncMiddleware(
       message: "Product updated successfully.",
       data: updatedProduct,
     });
+  } catch (err) {
+    // Handle unexpected errors with a 500 status code
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
-);
+};
 
 // DELETE PRODUCT
-export const deleteProduct = asyncMiddleware(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const deleteProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
     const productId = req.params.id;
 
     const deletedProduct = await Product.findOneAndDelete({ _id: productId });
 
     if (!deletedProduct) {
-      return next(new ErrorHandler("Product not found", 404));
+      res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+      return;
     }
 
     return res.status(200).json({
@@ -113,5 +182,11 @@ export const deleteProduct = asyncMiddleware(
       message: "Product deleted successfully.",
       data: deletedProduct,
     });
+  } catch (err) {
+    // Handle unexpected errors with a 500 status code
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
-);
+};
