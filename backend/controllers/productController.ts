@@ -52,7 +52,12 @@ export const getAllProducts = async (
   next: NextFunction
 ) => {
   try {
-    const apiFeatures = new ApiFeatures(Product.find(), req.query).search();
+    const resultPerPage = 5;
+    const productCount = await Product.countDocuments();
+    const apiFeatures: ApiFeatures = new ApiFeatures(Product.find(), req.query)
+      .search()
+      .filter()
+      .pagination(resultPerPage);
     const products = await apiFeatures?.query;
 
     if (!products || products.length === 0) {
@@ -65,6 +70,7 @@ export const getAllProducts = async (
         success: true,
         message: "Products retrieved successfully.",
         products,
+        productCount,
       });
     }
   } catch (err) {
@@ -99,7 +105,6 @@ export const getProductsDetail = async (
       });
     }
   } catch (err) {
-    // Handle unexpected errors with a 500 status code
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -150,7 +155,6 @@ export const updateProduct = async (
       data: updatedProduct,
     });
   } catch (err) {
-    // Handle unexpected errors with a 500 status code
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -183,7 +187,6 @@ export const deleteProduct = async (
       data: deletedProduct,
     });
   } catch (err) {
-    // Handle unexpected errors with a 500 status code
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
