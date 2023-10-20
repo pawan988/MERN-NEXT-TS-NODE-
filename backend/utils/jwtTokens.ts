@@ -7,17 +7,19 @@ export const sendToken = (
   const token = user.getJWTToken();
 
   // OPTION FOR COOKIES
-  const cookieExpire = process.env.COOKIE_EXPIRE
-    ? parseInt(process.env.COOKIE_EXPIRE, 10)
-    : 1;
+
+  const expirationDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
   const option = {
-    expires: new Date(Date.now() + cookieExpire),
+    expires: expirationDate,
     httpOnly: true,
   };
-  res.status(statusCode).cookie("token", token, option).json({
-    success: true,
-    user,
-    token,
-    message: message,
-  });
+  res
+    .status(statusCode)
+    .cookie("token", token, option)
+    .json({
+      success: true,
+      user: statusCode === 201 ? user : null,
+      token,
+      message: message,
+    });
 };

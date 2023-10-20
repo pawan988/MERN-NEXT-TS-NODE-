@@ -71,9 +71,30 @@ export const userLogin = async (
       });
     }
 
-    const token = user.getJWTToken();
-
     sendToken(user, 200, res, "Login successful.");
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// USER LOGOUT
+export const userLogout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    res.cookie("token", null, {
+      maxAge: 0, // Set maxAge to 0 to delete the cookie
+      httpOnly: true,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Logout successful.",
+    });
   } catch (err) {
     res.status(500).json({
       success: false,
