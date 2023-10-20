@@ -22,3 +22,14 @@ export const verifyAuthentication = async (
 
   next();
 };
+
+export const verifyRoles = (...roles: any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!roles?.includes(req.user.role)) {
+      res.status(401).json({
+        message: `${req.user.role} don't have access.`,
+      });
+    }
+    next();
+  };
+};

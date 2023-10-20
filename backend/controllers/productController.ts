@@ -9,6 +9,7 @@ export const createProduct = async (
   next: NextFunction
 ) => {
   try {
+    req.body.user = req.user.id;
     const { description, images, category, stock, rating, name, price } =
       req.body;
     const existingProduct = await Product.findOne({ name });

@@ -1,5 +1,8 @@
 import { validateProductFields } from "../middleware/addProductMiddleware";
-import { verifyAuthentication } from "../middleware/authMiddleware";
+import {
+  verifyAuthentication,
+  verifyRoles,
+} from "../middleware/authMiddleware";
 const expresss = require("express");
 const router = expresss.Router();
 const {
@@ -13,9 +16,18 @@ const {
 router.route("/productsList").get(verifyAuthentication, getAllProducts);
 router
   .route("/addProduct")
-  .post(verifyAuthentication, validateProductFields, createProduct);
-router.route("/updateProduct/:id").put(verifyAuthentication, updateProduct);
-router.route("/deleteProduct/:id").delete(verifyAuthentication, deleteProduct);
+  .post(
+    verifyAuthentication,
+    validateProductFields,
+    verifyRoles("admin"),
+    createProduct
+  );
+router
+  .route("/updateProduct/:id")
+  .put(verifyAuthentication, verifyRoles("admin"), updateProduct);
+router
+  .route("/deleteProduct/:id")
+  .delete(verifyAuthentication, verifyRoles("admin"), deleteProduct);
 router
   .route("/getProductDetail/:id")
   .get(verifyAuthentication, getProductsDetail);
