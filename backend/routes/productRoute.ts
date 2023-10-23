@@ -5,13 +5,13 @@ import {
 } from "../middleware/authMiddleware";
 const expresss = require("express");
 const router = expresss.Router();
-const {
+import {
   getAllProducts,
   createProduct,
   updateProduct,
   deleteProduct,
   getProductsDetail,
-} = require("../controllers/productController");
+} from "../controllers/productController";
 
 router.route("/productsList").get(verifyAuthentication, getAllProducts);
 router

@@ -3,6 +3,7 @@ const validator = require("validator");
 import { NextFunction } from "express";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 // Define the User Schema
 
@@ -53,8 +54,8 @@ const userSchema = new userMongoose.Schema({
     type: String,
     default: "user",
   },
-  // resetPasswordToken: String,
-  // resetPasswordExpire: Date,
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 });
 
 // BCRYPT PASSWORD
@@ -78,6 +79,17 @@ userSchema.methods.getJWTToken = function () {
 
 userSchema.methods.comparePassword = async function (password: any) {
   return await bcrypt.compare(password, this.password);
+};
+
+// PASSWORD RESET TOKEN
+userSchema.methods.generateResetPasswordToken = async function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+  return resetToken;
 };
 
 module.exports = userMongoose.model("User", userSchema);
