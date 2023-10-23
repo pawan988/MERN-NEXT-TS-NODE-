@@ -192,3 +192,31 @@ export const changePassword = async (
     });
   }
 };
+
+// GET USER DETAIL
+
+export const getUserDetail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "User retrive success.", user });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
