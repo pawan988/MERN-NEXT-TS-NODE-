@@ -12,6 +12,8 @@ import {
   updateProfile,
   getAllUsers,
   getSingleUser,
+  udpateUserRole,
+  deleteUser,
 } from "../controllers/userController";
 
 import {
@@ -32,10 +34,16 @@ router.route("/getUserDetail").get(verifyAuthentication, getUserDetail);
 router.route("/password/update").put(verifyAuthentication, updatePassword);
 router.route("/profile/update").put(verifyAuthentication, updateProfile);
 router
-  .route("/getAllUsers")
+  .route("/admin/getAllUsers")
   .get(verifyAuthentication, verifyRoles("admin"), getAllUsers);
 router
-  .route("/getSingleUser/:id")
+  .route("/admin/getSingleUser/:id")
   .get(verifyAuthentication, verifyRoles("admin"), getSingleUser);
+router
+  .route("/admin/updateUserRole/:id")
+  .put(verifyAuthentication, verifyRoles("admin"), udpateUserRole);
+router
+  .route("/admin/deleteUser/:id")
+  .delete(verifyAuthentication, verifyRoles("admin"), deleteUser);
 
 module.exports = router;

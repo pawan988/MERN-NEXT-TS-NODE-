@@ -361,3 +361,74 @@ export const getSingleUser = async (
     });
   }
 };
+
+// UPDATE USER ROLE(ADMIN)
+
+export const udpateUserRole = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userData = {
+      username: req.body.username,
+      email: req.body.email,
+      role: req.body.role,
+    };
+    const user = await User.findByIdAndUpdate(req.params.id, userData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User has been successfully updated.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: true,
+      message: "Inernal server error",
+    });
+  }
+};
+
+// DELETE USER(AADMIN)
+
+// UPDATE USER ROLE(ADMIN)
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    await User.deleteOne({ _id: user._id });
+
+    res.status(200).json({
+      success: true,
+      message: "User has been deleted successfully.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
