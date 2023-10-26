@@ -254,3 +254,70 @@ export const updatePassword = async (
     });
   }
 };
+
+// UPDATE USER PROFILE
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userData = {
+      username: req.body.username,
+      email: req.body.email,
+      mobile: req.body.mobile,
+    };
+
+    const user = await User.findByIdAndUpdate(req.user.id, userData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile has been successfully updated.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// GET ALL USERS
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.find();
+    if (!user) {
+      return res.status(409).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "User Retrive successfully.",
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      messsage: "Internal server error",
+    });
+  }
+};
