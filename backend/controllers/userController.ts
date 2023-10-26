@@ -3,6 +3,7 @@ import { sendToken } from "../utils/jwtTokens";
 const User = require("../models/userModal");
 import { sendEmail } from "../utils/sendEmail";
 const crypto = require("crypto");
+import mongoose from "mongoose";
 
 // USER REGISTRATION
 
@@ -294,7 +295,7 @@ export const updateProfile = async (
   }
 };
 
-// GET ALL USERS
+// GET ALL USERS (ADMIN)
 
 export const getAllUsers = async (
   req: Request,
@@ -318,6 +319,45 @@ export const getAllUsers = async (
     res.status(500).json({
       success: false,
       messsage: "Internal server error",
+    });
+  }
+};
+
+// GET SINGLE USERS (ADMIN)
+
+export const getSingleUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format.",
+      });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User doesn't exist.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User retrieved successfully.",
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
 };
