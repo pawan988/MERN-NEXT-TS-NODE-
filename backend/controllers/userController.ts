@@ -34,8 +34,6 @@ export const userRegiter = async (
     });
     const user = await userData.save();
 
-    const token = user.getJWTToken();
-
     sendToken(user, 201, res, "User Registration success.");
   } catch (err) {
     res.status(500).json({
@@ -201,7 +199,7 @@ export const getUserDetail = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -217,6 +215,42 @@ export const getUserDetail = async (
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+// UPDATE PASSWORD
+export const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const user = await User.findById(req.user.id).select("+password");
+
+    const isPasswordMatched = await user.comparePassword(oldPassword);
+    if (!isPasswordMatched) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password is incorrect",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Password confirmation does not match the new password",
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+    sendToken(user, 200, res, "Password has been successfully updated.");
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
 };

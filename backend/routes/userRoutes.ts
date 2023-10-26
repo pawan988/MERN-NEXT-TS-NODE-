@@ -8,6 +8,7 @@ import {
   userLogout,
   resetPassword,
   getUserDetail,
+  updatePassword,
 } from "../controllers/userController";
 
 import {
@@ -21,6 +22,7 @@ router.route("/userLogin").post(validateUserLoginFields, userLogin);
 router.route("/userLogout").get(userLogout);
 router.route("/resetPassword").post(resetPassword);
 router.route("/changePassword/:token").put(changePassword);
-router.route("/getUserDetail/:id").get(verifyAuthentication, getUserDetail);
+router.route("/getUserDetail").get(verifyAuthentication, getUserDetail);
+router.route("/password/update").put(verifyAuthentication, updatePassword);
 
 module.exports = router;
