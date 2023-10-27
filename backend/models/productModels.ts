@@ -15,7 +15,7 @@ const productSchema = {
     required: [true, "Please enter product price."],
     maxLength: [8, "Price should be a maximum of 8 characters long."],
   },
-  rating: {
+  ratings: {
     type: Number,
     default: 0,
   },
@@ -32,26 +32,31 @@ const productSchema = {
     maxLength: [3, "Stock should be a maximum of 3 characters long."],
     default: 1,
   },
-  // numberOfReviews: {
-  //   type: Number,
-  //   default: 0,
-  //   reviews: [
-  //     {
-  //       name: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       rating: {
-  //         type: Number,
-  //         required: true,
-  //       },
-  //       comment: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //     },
-  //   ],
-  // },
+  numberOfReviews: {
+    type: Number,
+    default: 0,
+  },
+  reviews: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      rating: {
+        type: Number,
+        required: true,
+      },
+      comment: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

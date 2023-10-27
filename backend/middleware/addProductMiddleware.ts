@@ -2,7 +2,7 @@ interface ProductRequestBody {
   name?: string;
   description?: string;
   price?: number;
-  rating?: number;
+  ratings?: number;
   images?: { [key: string]: string };
   category?: string;
   stock?: number;
@@ -16,7 +16,7 @@ export function validateProductFields(
   next: NextFunction
 ) {
   const requestBody: ProductRequestBody = req.body;
-  const { description, images, category, stock, rating, name, price } =
+  const { description, images, category, stock, ratings, name, price } =
     requestBody;
   const missingFields: string[] = [];
 
@@ -25,7 +25,7 @@ export function validateProductFields(
   if (!price) missingFields.push("price");
   if (!category) missingFields.push("category");
   if (!stock) missingFields.push("stock");
-  if (!rating) missingFields.push("rating");
+  if (!ratings) missingFields.push("rating");
   if (!images) missingFields.push("images");
 
   if (missingFields?.length > 0) {

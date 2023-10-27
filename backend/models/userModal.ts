@@ -52,7 +52,7 @@ const userSchema = new userMongoose.Schema({
   },
   role: {
     type: String,
-    default: "admin",
+    default: "user",
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,

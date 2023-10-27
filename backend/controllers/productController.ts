@@ -9,7 +9,7 @@ export const createProduct = async (
   next: NextFunction
 ) => {
   try {
-    req.body.user = req.user.id;
+    const user = req.user.id;
     const { description, images, category, stock, rating, name, price } =
       req.body;
     const existingProduct = await Product.findOne({ name });
@@ -28,6 +28,7 @@ export const createProduct = async (
       stock,
       rating,
       price,
+      user,
     });
 
     const product = await productData.save();
@@ -38,6 +39,7 @@ export const createProduct = async (
       product,
     });
   } catch (err) {
+    console.log("errrr ===>>>", err);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -191,6 +193,54 @@ export const deleteProduct = async (
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+// ADD OR UPDATE REVIEW
+
+export const addProductReview = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { rating, comment, productId } = req.body;
+    const review = {
+      user: req.user._id,
+      name: req.user.username,
+      rating: Number(rating),
+      comment,
+    };
+    console.log("reviewreviewreview ===>>>", review);
+    const product = await Product.findById(productId);
+    const isReviewd = product.reviews.find(
+      (rev: any) => rev.user.toString() === req.user._id.toString()
+    );
+    if (isReviewd) {
+      product.reviews.forEach((rev: any) => {
+        if (rev.user.toString() === req.user._id.toString()) {
+          (rev.rating = rating), (rev.comment = comment);
+        }
+      });
+    } else {
+      product.reviews.push(review);
+      product.numberOfReviews = product.reviews.length;
+    }
+    let average = 0;
+    product.rating =
+      product.reviews.forEach((rev: any) => {
+        average += rev.rating;
+      }) / product.reviews.length;
+    await product.save();
+    res.status(200).json({
+      success: true,
+    });
+  } catch (err) {
+    console.log("errr in catch block =====>>>>", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
     });
   }
 };
