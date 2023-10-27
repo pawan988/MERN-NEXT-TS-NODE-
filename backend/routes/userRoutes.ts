@@ -19,6 +19,7 @@ import {
 import {
   validateUserFields,
   validateUserLoginFields,
+  validateUserUpdatePasswordFields,
 } from "../middleware/usersMiddleware";
 import {
   verifyAuthentication,
@@ -31,7 +32,9 @@ router.route("/userLogout").get(userLogout);
 router.route("/resetPassword").post(resetPassword);
 router.route("/changePassword/:token").put(changePassword);
 router.route("/getUserDetail").get(verifyAuthentication, getUserDetail);
-router.route("/password/update").put(verifyAuthentication, updatePassword);
+router
+  .route("/password/update")
+  .put(validateUserUpdatePasswordFields, verifyAuthentication, updatePassword);
 router.route("/profile/update").put(verifyAuthentication, updateProfile);
 router
   .route("/admin/getAllUsers")

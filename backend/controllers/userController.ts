@@ -249,6 +249,7 @@ export const updatePassword = async (
     await user.save();
     sendToken(user, 200, res, "Password has been successfully updated.");
   } catch (err) {
+    console.log("error ===>>>>>", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -401,9 +402,6 @@ export const udpateUserRole = async (
 };
 
 // DELETE USER(AADMIN)
-
-// UPDATE USER ROLE(ADMIN)
-
 export const deleteUser = async (
   req: Request,
   res: Response,

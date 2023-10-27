@@ -5,6 +5,8 @@ interface UserRequestBody {
   password?: string;
   confirmPassword?: string;
   role?: string;
+  oldPassword?: string;
+  newPassword?: string;
 }
 
 import { Request, Response, NextFunction } from "express";
@@ -51,6 +53,32 @@ export function validateUserLoginFields(
 
   if (!email) missingFields.push("email");
   if (!password) missingFields.push("password");
+  if (missingFields?.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: `The following fields are missing or empty: ${missingFields.join(
+        ", "
+      )}`,
+    });
+  }
+
+  next();
+}
+
+// UPDATE PASSWORD MIDDLEWARE
+
+export function validateUserUpdatePasswordFields(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const requestBody: UserRequestBody = req.body;
+  const { oldPassword, newPassword, confirmPassword } = requestBody;
+  const missingFields: string[] = [];
+
+  if (!oldPassword) missingFields.push("Old Password");
+  if (!newPassword) missingFields.push("New password");
+  if (!confirmPassword) missingFields.push("Confirm password");
   if (missingFields?.length > 0) {
     return res.status(400).json({
       success: false,
