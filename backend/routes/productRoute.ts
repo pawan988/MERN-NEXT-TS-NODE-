@@ -12,6 +12,8 @@ import {
   deleteProduct,
   getProductsDetail,
   addProductReview,
+  getProductReviews,
+  deleteReviews,
 } from "../controllers/productController";
 
 router.route("/productsList").get(verifyAuthentication, getAllProducts);
@@ -33,5 +35,7 @@ router
   .route("/getProductDetail/:id")
   .get(verifyAuthentication, getProductsDetail);
 router.route("/addProductReview").put(verifyAuthentication, addProductReview);
+router.route("/getReviews").get(getProductReviews);
+router.route("/deleteReviews").delete(verifyAuthentication, deleteReviews);
 
 module.exports = router;

@@ -242,3 +242,75 @@ export const addProductReview = async (
     });
   }
 };
+
+// GET ALL REVIEWS OF A PRODUCT
+
+export const getProductReviews = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.query.id);
+    if (!product) {
+      return res.status(409).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Product reviews retrieved successfully.",
+      reviews: product.reviews,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
+
+// DELETE REVIEW
+
+export const deleteReviews = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.query.productId);
+    if (!product) {
+      res.status(409).json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+    const idToCompare = req.query.id || "";
+    const reviews = product.reviews.filter((rev: any) => {
+      return rev._id.toString() !== idToCompare.toString();
+    });
+    let average = 0;
+    reviews.forEach((rev: any) => {
+      average += rev.rating;
+    });
+    const ratings = average / reviews.length;
+    const numOfReviews = reviews.length;
+
+    await Product.findByIdAndUpdate(
+      req.query.productId,
+      {
+        reviews,
+        ratings,
+        numOfReviews,
+      },
+      {
+        new: true,
+        runValidators: true,
+        useFindAndModify: true,
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Reviews deleted Successfully.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
