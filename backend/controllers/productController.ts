@@ -39,7 +39,6 @@ export const createProduct = async (
       product,
     });
   } catch (err) {
-    console.log("errrr ===>>>", err);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -212,7 +211,6 @@ export const addProductReview = async (
       rating: Number(rating),
       comment,
     };
-    console.log("reviewreviewreview ===>>>", review);
     const product = await Product.findById(productId);
     const isReviewd = product.reviews.find(
       (rev: any) => rev.user.toString() === req.user._id.toString()
@@ -228,16 +226,16 @@ export const addProductReview = async (
       product.numberOfReviews = product.reviews.length;
     }
     let average = 0;
-    product.rating =
-      product.reviews.forEach((rev: any) => {
-        average += rev.rating;
-      }) / product.reviews.length;
-    await product.save();
+    product.reviews.forEach((rev: any) => {
+      average += rev.rating;
+    });
+    product.ratings = average / product.reviews.length;
+
+    await product.save({ validateBeforeSave: false });
     res.status(200).json({
       success: true,
     });
   } catch (err) {
-    console.log("errr in catch block =====>>>>", err);
     res.status(500).json({
       success: false,
       message: "Internal server error.",
