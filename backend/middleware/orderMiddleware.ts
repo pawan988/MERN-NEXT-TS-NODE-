@@ -1,5 +1,12 @@
 interface OrderRequestBody {
-  shippingInfo?: string;
+  shippingInfo?: {
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    pinCode?: number;
+    phonNo?: number;
+  };
   paymentInfo?: {
     id: string;
     status: string;
@@ -34,6 +41,12 @@ export function validateCreateOrderFields(
   const missingFields: string[] = [];
 
   if (!shippingInfo) missingFields.push("Shipping info");
+  if (!shippingInfo?.address) missingFields.push("Address");
+  if (!shippingInfo?.city) missingFields.push("City");
+  if (!shippingInfo?.state) missingFields.push("State");
+  if (!shippingInfo?.country) missingFields.push("Country");
+  if (!shippingInfo?.pinCode) missingFields.push("Pin code");
+  if (!shippingInfo?.phonNo) missingFields.push("Phone number");
   if (!paymentInfo) missingFields.push("Payment info");
   if (!orderItems) missingFields.push("Order items");
   if (!taxPrice) missingFields.push("Tax price");
